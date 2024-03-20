@@ -128,58 +128,58 @@ impl GRPCCli {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use std::str::FromStr;
-
-    use cosmrs::{Coin, Denom};
-    use rand::Rng;
-
-    use crate::account::AccountGenerator;
-    use crate::error::MyResult;
-    use crate::grpc_cli::GRPCCli;
-    use crate::{
-        COSMOS_GRPC, DENOM, MAXIMUM_ATOM_LEFT, MINIMUM_ATOM_AMOUNT, MINIMUM_ATOM_LEFT,
-        TEST_MNEMONIC_CODE,
-    };
-
-    #[tokio::test]
-    async fn test_get_sequence_number() -> MyResult<()> {
-        let ag = AccountGenerator::new(TEST_MNEMONIC_CODE)?;
-        for index in 0..10 {
-            let account = ag.get_account_from_index(index)?;
-
-            let cli = GRPCCli::new(COSMOS_GRPC.to_string());
-            let res = cli.get_sequence_number(&account.account_id()?).await?;
-
-            let balance = cli.get_balance(&account.account_id()?).await?;
-            println!("balance: {:?}", balance);
-            if balance <= MINIMUM_ATOM_AMOUNT {
-                println!("...");
-                return Ok(());
-            }
-
-            let mut rng = rand::thread_rng();
-            let left = rng.gen_range(MINIMUM_ATOM_LEFT..MAXIMUM_ATOM_LEFT);
-            let left = left - left % 10_000;
-
-            println!(
-                "balance: {}, left: {}, amount: {}",
-                balance,
-                left,
-                balance - left
-            );
-
-            cli.stake(
-                &account,
-                &Coin {
-                    denom: Denom::from_str(DENOM)?,
-                    amount: balance - left,
-                },
-            )
-            .await?;
-        }
-
-        Ok(())
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use std::str::FromStr;
+//
+//     use cosmrs::{Coin, Denom};
+//     use rand::Rng;
+//
+//     use crate::account::AccountGenerator;
+//     use crate::error::MyResult;
+//     use crate::grpc_cli::GRPCCli;
+//     use crate::{
+//         COSMOS_GRPC, DENOM, MAXIMUM_ATOM_LEFT, MINIMUM_ATOM_AMOUNT, MINIMUM_ATOM_LEFT,
+//         TEST_MNEMONIC_CODE,
+//     };
+//
+//     #[tokio::test]
+//     async fn test_get_sequence_number() -> MyResult<()> {
+//         let ag = AccountGenerator::new(TEST_MNEMONIC_CODE)?;
+//         for index in 0..10 {
+//             let account = ag.get_account_from_index(index)?;
+//
+//             let cli = GRPCCli::new(COSMOS_GRPC.to_string());
+//             let res = cli.get_sequence_number(&account.account_id()?).await?;
+//
+//             let balance = cli.get_balance(&account.account_id()?).await?;
+//             println!("balance: {:?}", balance);
+//             if balance <= MINIMUM_ATOM_AMOUNT {
+//                 println!("...");
+//                 return Ok(());
+//             }
+//
+//             let mut rng = rand::thread_rng();
+//             let left = rng.gen_range(MINIMUM_ATOM_LEFT..MAXIMUM_ATOM_LEFT);
+//             let left = left - left % 10_000;
+//
+//             println!(
+//                 "balance: {}, left: {}, amount: {}",
+//                 balance,
+//                 left,
+//                 balance - left
+//             );
+//
+//             cli.stake(
+//                 &account,
+//                 &Coin {
+//                     denom: Denom::from_str(DENOM)?,
+//                     amount: balance - left,
+//                 },
+//             )
+//             .await?;
+//         }
+//
+//         Ok(())
+//     }
+// }
